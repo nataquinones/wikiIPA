@@ -1,2 +1,4 @@
 docs/.jekyll-cache/*
+docs/.jekyll-metadata
 .DS_Store
+docs/_site/*
