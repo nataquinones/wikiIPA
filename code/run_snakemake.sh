@@ -1,0 +1,1 @@
+snakemake --cores 4 -k --config 'version=0.1'

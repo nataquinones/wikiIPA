@@ -1,0 +1,54 @@
+# ╭───────────────────────────────────────────────────────────────────────────╮
+#   DOWNLOAD IPA ENTRIES FROM WIKTIONARY PER LANGUAGE 
+#
+#   author: Natalia Quinones-Olvera
+#   email: nquinones@g.harvard.edu
+# ╰───────────────────────────────────────────────────────────────────────────╯
+
+
+import pandas as pd
+import os
+
+
+MAIN_DIR = os.path.join('data', str(config['version']))
+
+def main_dir(child):
+    return os.path.join(MAIN_DIR, child)
+
+df = pd.read_table(main_dir('language_list.tsv'),
+                       sep='\t')
+
+pageid_dict = df.set_index('lang_min').to_dict()['pageid']
+
+
+
+DEBUG = False
+
+if DEBUG is True:
+    samples = ['abau', 'abenaki']
+    
+else:
+    samples = df['lang_min']
+
+
+# RULE ALL
+# -----------------------------------------------------------------------------
+
+rule all:
+    input:
+        expand(main_dir('tables/{sample}.tsv'), sample=samples)
+
+        
+# rule glossary_tsv
+# -----------------------------------------------------------------------------
+
+rule glossary_tsv:
+    output:
+        main_dir('tables/{sample}.tsv')
+    params:
+        page_id = lambda wildcards: pageid_dict[wildcards.sample]
+    shell:
+        'python scripts/get_glossary.py '\
+            '{params.page_id} '\
+            '{wildcards.sample} '\
+            '{output}'
